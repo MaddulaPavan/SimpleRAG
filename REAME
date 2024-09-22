@@ -10,10 +10,4 @@ This project demonstrates a simple yet effective implementation of Retrieval Aug
 
 3. Answer Generation: The retrieved chunks are provided as context to a powerful language model (Google Gemini). The model leverages this context to generate an informative answer to the user's query.
 
-## Key Technologies
 
-* **pypdf:** Extracts text from PDF documents
-* **langchain:** Provides tools for text splitting and vector store creation
-* **FAISS:** Efficient library for similarity search
-* **HuggingFace Embeddings:** Converts text into numerical representations for comparison
-* **Google Gemini:** Large language model for generating contextually relevant answers
