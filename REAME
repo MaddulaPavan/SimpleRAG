@@ -1,0 +1,19 @@
+PDF Question Answering with Retrieval Augmented Generation (RAG)
+
+This project demonstrates a simple yet effective implementation of Retrieval Augmented Generation (RAG) for answering questions based on the content of a PDF document.
+
+-> How it Works
+
+1. Document Processing: The PDF is parsed, and its text is split into manageable chunks. These chunks are embedded into a vector space using HuggingFace embeddings, facilitating efficient similarity search with FAISS.
+
+2. Query Processing: When a user asks a question, the system retrieves the most relevant chunks of text from the PDF based on their similarity to the query.
+
+3. Answer Generation: The retrieved chunks are provided as context to a powerful language model (Google Gemini). The model leverages this context to generate an informative answer to the user's query.
+
+## Key Technologies
+
+* **pypdf:** Extracts text from PDF documents
+* **langchain:** Provides tools for text splitting and vector store creation
+* **FAISS:** Efficient library for similarity search
+* **HuggingFace Embeddings:** Converts text into numerical representations for comparison
+* **Google Gemini:** Large language model for generating contextually relevant answers
