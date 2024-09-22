@@ -1,0 +1,83 @@
+import warnings
+warnings.filterwarnings("ignore", message="Field .* has conflict with protected namespace")
+
+import os
+from pypdf import PdfReader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
+import google.generativeai as genai
+
+
+GOOGLE_API_KEY = "#"
+genai.configure(api_key=GOOGLE_API_KEY)
+
+def extract_text_from_pdf(pdf_path):
+    with open(pdf_path, 'rb') as file:
+        pdf_reader = PdfReader(file)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text()
+    return text
+
+def split_text(text):
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200,
+        length_function=len
+    )
+    chunks = text_splitter.split_text(text)
+    return chunks
+
+def create_vector_store(chunks):
+    try:
+        embeddings = HuggingFaceEmbeddings()
+        vector_store = FAISS.from_texts(chunks, embeddings)
+        return vector_store
+    except Exception as e:
+        print(f"Error creating vector store: {e}")
+        return None
+
+def setup_gemini_model():
+    try:
+        model = genai.GenerativeModel('gemini-pro')
+        return model
+    except Exception as e:
+        print(f"Error setting up Gemini model: {e}")
+        return None
+
+def main(pdf_path):
+    raw_text = extract_text_from_pdf(pdf_path)
+
+    text_chunks = split_text(raw_text)
+    
+    vector_store = create_vector_store(text_chunks)
+    if vector_store is None:
+        print("Failed to create vector store. Exiting.")
+        return
+    
+    model = setup_gemini_model()
+    if model is None:
+        print("Failed to set up Gemini model. Exiting.")
+        return
+  
+    while True:
+        query = input("Enter your question (or 'quit' to exit): ")
+        if query.lower() == 'quit':
+            break
+        
+        try:
+
+            relevant_docs = vector_store.similarity_search(query, k=2)
+            context = "\n".join([doc.page_content for doc in relevant_docs])
+            
+            prompt = f"Context: {context}\n\nQuestion: {query}\n\nAnswer:"
+            response = model.generate_content(prompt)
+            
+            print(f"Answer: {response.text}\n")
+        except Exception as e:
+            print(f"Error processing query: {e}")
+
+if __name__ == "__main__":
+    pdf_path = r"C:\Users\maddh\OneDrive\Desktop\RAG\RAG Sample pdf.pdf"
+    main(pdf_path)
