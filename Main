@@ -79,5 +79,5 @@ def main(pdf_path):
             print(f"Error processing query: {e}")
 
 if __name__ == "__main__":
-    pdf_path = r"C:\Users\maddh\OneDrive\Desktop\RAG\RAG Sample pdf.pdf"
+    pdf_path = "pdf files location"
     main(pdf_path)
